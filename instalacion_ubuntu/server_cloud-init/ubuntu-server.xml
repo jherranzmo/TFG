@@ -1,0 +1,37 @@
+<domain type='kvm'>
+  <name>ubuntu-server</name>
+  <memory unit='KiB'>2097152</memory>  <!-- 2GB de memoria -->
+  <vcpu placement='static'>2</vcpu>    <!-- 2 CPUs -->
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-5.2'>hvm</type>
+    <boot dev='cdrom'/>  <!-- Arrancar desde el CDROM -->
+    <boot dev='hd'/>
+  </os>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/ubuntu-server.qcow2'/>  <!-- Disco duro virtual -->
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/ubuntu-server-22.04.5.iso'/>  <!-- Ruta a tu ISO -->
+      <target dev='sda' bus='ide'/>
+      <readonly/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/seed.iso'/>  <!-- Nueva imagen ISO de seed -->
+      <target dev='sdb' bus='ide'/>
+      <readonly/>
+    </disk>
+    <interface type='network'>
+      <mac address='52:54:00:6d:90:02'/>
+      <source network='default'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
+    <graphics type='vnc' port='-1' listen='127.0.0.1'/>
+  </devices>
+</domain>

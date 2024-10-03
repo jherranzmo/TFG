@@ -1,0 +1,54 @@
+---
+- name: Crear una VM con instalación desatendida de Ubuntu usando Cloud-Init y XML
+  hosts: localhost
+  gather_facts: no
+  become: true
+  collections:
+    - community.libvirt
+  tasks:
+    - name: Crear disco de la máquina virtual
+      command: >
+        qemu-img create -f qcow2 /var/lib/libvirt/images/ubuntu-server.qcow2 20G
+      args:
+        creates: /var/lib/libvirt/images/ubuntu-server.qcow2
+
+          #    - name: Crear disco de seed.iso para cloud-init
+          #command: >
+          #genisoimage -output /var/lib/libvirt/images/seed.iso -volid cidata -joliet -rock user-data meta-data
+          #args:
+          #chdir: cloud-init/
+          #when: not ansible_check_mode
+
+    - name: Definir la máquina virtual usando XML (sin arrancarla)
+      community.libvirt.virt:
+        command: define
+        xml: "{{ lookup('file', 'ubuntu-server.xml') }}"
+
+    - name: Arrancar la máquina virtual
+      community.libvirt.virt:
+        name: ubuntu-server
+        state: running
+
+    - name: Obtener la configuración XML actual de la VM
+      command: "virsh dumpxml ubuntu-server"
+      register: vm_config
+
+    - name: Guardar la configuración XML en un archivo temporal
+      copy:
+        content: "{{ vm_config.stdout }}"
+        dest: /tmp/vm_config.xml
+
+          #    - name: Modificar el XML para cambiar el arranque de CD-ROM a disco duro
+          #replace:
+          #path: /tmp/vm_config.xml
+          #regexp: '<boot dev="cdrom"/>'
+          #replace: '<boot dev="hd"/>'
+    - name: Eliminar líneas que coincidan con una expresión regular
+      lineinfile:
+        path: /tmp/vm_config.xml
+        state: absent
+        regexp: "<boot dev='cdrom'/>"
+
+    - name: Redefinir la VM con la nueva configuración
+      command: "virsh define /tmp/vm_config.xml"
+

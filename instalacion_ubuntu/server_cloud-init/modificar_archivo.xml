@@ -1,0 +1,14 @@
+---
+- name: Crear una VM con instalación desatendida de Ubuntu usando Cloud-Init y XML
+  hosts: localhost
+  gather_facts: no
+  become: true
+  collections:
+    - community.libvirt
+  tasks:
+    - name: Modificar el XML para cambiar el arranque de CD-ROM a disco duro
+      replace:
+        path: /tmp/vm_config.xml
+        regexp: "<boot dev='cdrom'/>"
+        replace: "<boot dev='hd'/>"
+

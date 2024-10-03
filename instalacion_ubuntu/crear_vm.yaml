@@ -1,0 +1,28 @@
+---
+- name: Crear una máquina virtual en el servidor B
+  hosts: servers
+  become: true
+  vars_files:
+    - values.yml
+  tasks:
+    - name: Crear la máquina virtual con virt-install
+      command: >
+        virt-install --name {{ item.name }} 
+          --memory {{ item.memory }}
+          --vcpus {{ item.vcpus }}
+          --os-type linux
+          --os-variant ubuntu20.04
+          --cdrom /var/lib/libvirt/images/ubuntu-server-22.04.5.iso
+          --disk path=/var/lib/libvirt/images/cloud-init.iso,device=cdrom
+          --disk size=20
+          --network network=default
+          --graphics vnc,listen=0.0.0.0
+          --noautoconsole
+      loop: "{{ vms }}"
+      args:
+        creates: /var/lib/libvirt/images/virt1.qcow2
+
+    - name: Arrancar la máquina virtual para iniciar la instalación de Ubuntu
+      virt:
+        name: master1
+        state: running

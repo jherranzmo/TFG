@@ -1,0 +1,58 @@
+#cloud-config
+hostname: ubuntu-server
+
+users:
+  - name: administrador
+    gecos: Administrador del sistema
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCBehmNVuXnDNPGenR99O+b30f3LsXnuEXraVUP3bk0TpGEER6ZdEL4z4KnoDhVO3WAyjYGKYuBWHGy14S5MA6FohXdu7cVyBkVBlm44GejcUmhCYPzlZF2Jq6enXen3NTD0vH1HSkLekZ78c7MtjQKRmBVrjr1xJP98O7J4hitmqIdyh0GYv5BlkedUv5lFOGtaH6SW0mpKfwp2u6fjCuyckXdeJyKAEq+xnQQWPNOmt0vgbcJuAFW+2vzeul7mu25v+o37HeV+CSNBlmDFQIGQJ/XYbe9dksysomtas1sgtV8dai1rBGwuklj+X8otmFojXRRvF0sVQzs0pDbWjW3hVTslQNF+YLr/YX//vSkKsQoaL87Edkj6XNtuxXiZtCCnOnNzB2DbpISiRWiXorplN4R70QXkvfwSGHHgy0/AlzTpsy8E/bsowY23yKt6vl6zain21vg472Iq9pgUD3Btijsbywt0Rf4Z9Xo4aLWTmoVc4XIyQzWWEWPfspLCBs= Clave_bbva_jd_rsa
+
+disable_root: false
+ssh_pwauth: true
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+# Configuración de la red
+#network:
+#  version: 2
+#  ethernets:
+#    eth0:
+#      dhcp4: true
+    # Si deseas configurar una IP estática, puedes hacerlo así:
+    # eth0:
+    #   addresses:
+    #     - 192.168.1.100/24
+    #   gateway4: 192.168.1.1
+    #   nameservers:
+    #     addresses:
+    #       - 8.8.8.8
+    #       - 8.8.4.4
+# Paquetes adicionales para instalar después de la instalación
+packages:
+#  - vim
+  - htop
+  - git
+
+
+timezone: Europe/Madrid
+locale: es_ES.UTF-8
+
+runcmd:
+  - [ sh, -c, 'echo "Provisions complete" > /var/log/cloud-init-output.log' ]
+#  - apt update
+#  - apt upgrade -y
+#  - systemctl enable ssh
+#  - ufw allow OpenSSH
+#  - ufw --force enable
+#  - [ sh, -c, 'echo "Removing CD-ROM" && umount /dev/cdrom || true' ]
+#  - reboot
+
+# Comandos a ejecutar en el primer arranque del sistema
+bootcmd:
+  - echo "Sistema instalado automáticamente con cloud-init" > /var/log/cloud-init.log
+
+# Mensajes finales que aparecen al usuario al finalizar la instalación
+final_message: "Instalación completa. El servidor está listo para usar."

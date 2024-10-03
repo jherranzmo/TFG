@@ -1,0 +1,61 @@
+---
+- name: Instalar Ubuntu en VM VirtualBox
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - values.yml
+  tasks:
+    - name: Crear la VM en VirtualBox
+      command: vboxmanage createvm --name {{ item.name }} --ostype Ubuntu_64 --register
+      loop: "{{ vms }}"
+
+    - name: Configurar memoria RAM y VRAM de la VM
+      command: vboxmanage modifyvm {{ item.name }} --memory {{ item.memory }} --vram 16 --cpus {{ item.vcpus }}
+      loop: "{{ vms }}"
+
+    - name: Crear disco duro de 20 GB
+      command: vboxmanage createhd --filename ~/VirtualBox\ VMs/{{ item.name }}/{{ item.name }}.vdi --size 20000
+      loop: "{{ vms }}"
+
+    - name: Añadir controlador SATA
+      command: vboxmanage storagectl {{ item.name }} --name "SATA Controller" --add sata --controller IntelAhci
+      loop: "{{ vms }}"
+
+    - name: Vincular disco duro con la controladora SATA
+      command: vboxmanage storageattach {{ item.name }} --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium ~/VirtualBox\ VMs/{{ item.name }}/{{ item.name }}.vdi
+      loop: "{{ vms }}"
+
+    - name: Crear controlador IDE y añadir la ISO de Ubuntu
+      command: vboxmanage storagectl {{ item.name }} --name "IDE Controller" --add ide
+      loop: "{{ vms }}"
+
+    - name: Montar la ISO de Ubuntu
+      command: vboxmanage storageattach {{ item.name }} --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium /home/jdherranz/TFG/instalacion_ubuntu/vbox/ubuntu-server-22.04.5.iso
+      loop: "{{ vms }}"   
+
+    - name: Montar la ISO de cloud-init
+      command: vboxmanage storageattach {{ item.name }} --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium /home/jdherranz/TFG/instalacion_ubuntu/vbox/seed/seed.iso
+      loop: "{{ vms }}"
+
+    - name: Configurar el arranque de la VM desde la ISO
+      command: vboxmanage modifyvm {{ item.name }} --boot1 dvd --boot2 disk --boot3 none --boot4 none
+      loop: "{{ vms }}"
+
+    - name: Configurar adaptador de red en modo NAT
+      command: vboxmanage modifyvm {{ item.name }} --nic1 nat
+      loop: "{{ vms }}"
+
+    - name: Arrancar la VM para instalar Ubuntu
+      command: vboxmanage startvm {{ item.name }} --type headless
+      loop: "{{ vms }}"
+
+    - name: Esperar a que {{ item.name }} se apague
+      shell: VBoxManage showvminfo {{ item.name }} | grep -i 'State' | grep -i 'powered off'
+      register: vm_state
+      retries: 25   # Número de intentos
+      delay: 30     # Segundos entre intentos
+      until: vm_state.rc == 0
+      ignore_errors: yes
+      loop: "{{ vms }}"
+
+
