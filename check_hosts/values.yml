@@ -1,0 +1,24 @@
+# values.yml
+num_workers: 3
+
+master:
+  - name: master1
+    memory: 3072
+    vcpus: 3
+  - name: master2
+    memory: 3072
+    vcpus: 3
+
+
+
+vms:
+  - name: master1
+    memory: 3072
+    vcpus: 3
+  - name: master2
+    memory: 3072
+    vcpus: 3
+  - name: worker1
+    memory: 2048
+    vcpus: 2
+

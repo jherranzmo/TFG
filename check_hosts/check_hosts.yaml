@@ -1,0 +1,44 @@
+---
+- name: Check hosts
+  hosts: hosts
+  gather_facts: no
+  vars_files:
+    - values.yml
+  tasks:
+    - name: Check ping to hosts (ping)
+      ansible.builtin.ping:
+
+    - name: Check "ansible" package
+      package:
+        name: ansible
+        state: present
+      register: ansible_installed
+      ignore_errors: yes
+
+    - name: Msg if "ansible" package is installed
+      debug:
+        msg: "Ansible package is installed in {{ inventory_hostname }}"
+      when: ansible_installed is success
+
+    - name: Msg if "ansible" package isn't installed
+      debug:
+        msg: "Ansible' is NOT installed in {{ inventory_hostname }}"
+      when: ansible_installed is failed
+
+    - name: Check "virtualbox" package
+      package:
+        name: virtualbox
+        state: present
+      register: vbox_installed
+      ignore_errors: yes
+
+    - name: Msg if "virtualbox" is installed
+      debug:
+        msg: "Virtualbox is installed in {{ inventory_hostname }}"
+      when: vbox_installed is success
+
+    - name: Msg if "virtualbox" isn't installed
+      debug:
+        msg: "Virtualbox' is NOT installed in {{ inventory_hostname }}"
+      when: vbox_installed is failed
+
