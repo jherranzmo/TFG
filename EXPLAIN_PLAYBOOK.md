@@ -2,7 +2,8 @@
 The explain of all playbooks
 
 ## Check hosts
-File: check_hosts.yaml
+Directory:	check_hosts
+File: 		check_hosts.yaml
 
 
 
