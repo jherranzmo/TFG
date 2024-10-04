@@ -1,0 +1,27 @@
+---
+- name: Instalar Kubernetes y configurar el clúster
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+    - name: Leer variables desde el archivo values.yaml
+      include_vars:
+        file: values.yaml
+
+    - name: Mostrar número de workers configurados y hosts
+      debug:
+        msg: "Número de workers configurado: {{ num_workers }} en los hosts: {{ hosts }}"
+
+    - name: Configurar master node (asumiendo que solo hay un master)
+      ansible.builtin.include_role:
+        name: setup_master
+
+    - name: Instalar workers en hosts de manera alternada
+      ansible.builtin.include_role:
+        name: setup_worker
+      with_sequence: count={{ num_workers }}
+      loop_control:
+        loop_var: worker_id
+      vars:
+        # Alternar entre host_a y host_b basado en el índice
+        current_host: "{{ hosts[(worker_id | int - 1) % hosts | length] }}"
