@@ -1,6 +1,10 @@
 # values.yml
 num_workers: 3
 
+hosts:
+  - primary_host
+  - secondary_host
+
 master:
   - name: master1
     memory: 3072
