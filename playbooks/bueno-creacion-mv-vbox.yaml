@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: no
   vars_files:
-    - ../values.yml
+    - ../prueba_values.yml
   tasks:
     - name: Crear la VM en VirtualBox
       command: vboxmanage createvm --name {{ item.name }} --ostype Ubuntu_64 --register
@@ -30,11 +30,11 @@
       loop: "{{ vms }}"
 
     - name: Montar la ISO de Ubuntu
-      command: vboxmanage storageattach {{ item.name }} --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium /home/jdherranz/TFG/instalacion_ubuntu/vbox/ubuntu-server-22.04.5.iso
+      command: vboxmanage storageattach {{ item.name }} --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium /home/jdherranz/TFG/images/ubuntu-server-22.04.5.iso
       loop: "{{ vms }}"   
 
     - name: Montar la ISO de cloud-init
-      command: vboxmanage storageattach {{ item.name }} --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium /home/jdherranz/TFG/instalacion_ubuntu/seed/seed.iso
+      command: vboxmanage storageattach {{ item.name }} --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium /home/jdherranz/TFG/images/seed/seed.iso
       loop: "{{ vms }}"
 
     - name: Configurar el arranque de la VM desde la ISO

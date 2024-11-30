@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: no
   vars_files:
-    - ../values.yml
+    - ../prueba_values.yml
   tasks:
     - name: Arrancar la VM para instalar Ubuntu
       command: vboxmanage startvm {{ item.name }} --type headless
