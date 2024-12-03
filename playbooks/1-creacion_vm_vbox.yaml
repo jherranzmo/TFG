@@ -41,6 +41,6 @@
       command: vboxmanage modifyvm {{ item.name }} --boot1 dvd --boot2 disk --boot3 none --boot4 none
       loop: "{{ vms }}"
 
-    - name: Configurar adaptador de red en modo NAT
+    - name: Configurar adaptador de red en modo bridge
       command: vboxmanage modifyvm {{ item.name }} --nic1 bridged --bridgeadapter1 "wlo1" 
       loop: "{{ vms }}"

@@ -34,7 +34,7 @@
       loop: "{{ vms }}"   
 
     - name: Montar la ISO de cloud-init
-      command: vboxmanage storageattach {{ item.name }} --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium /home/jdherranz/TFG/images/seed/seed.iso
+      command: vboxmanage storageattach {{ item.name }} --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium /home/jdherranz/TFG/images/seed-ip/seed-ip.iso
       loop: "{{ vms }}"
 
     - name: Configurar el arranque de la VM desde la ISO
@@ -42,5 +42,5 @@
       loop: "{{ vms }}"
 
     - name: Configurar adaptador de red en modo NAT
-      command: vboxmanage modifyvm {{ item.name }} --nic1 nat
+      command: vboxmanage modifyvm {{ item.name }} --nic1 bridged --bridgeadapter1 "wlo1" 
       loop: "{{ vms }}"
