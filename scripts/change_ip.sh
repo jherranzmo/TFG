@@ -3,7 +3,7 @@
 # Guardar la ip de la máquina que esté levantada:
 IP=$(nmap -sn 192.168.10.0/24 | grep ubuntu-server1 | awk -F'[()]' '{print $2}')
 
-OUTPUT_FILE="99-network-config.yaml"
+OUTPUT_FILE="01-netcfg.yaml"
 
 cat <<EOF > $OUTPUT_FILE
 network:
