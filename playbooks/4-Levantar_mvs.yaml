@@ -1,0 +1,12 @@
+---
+- name: Instalar paquetes en los master
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../values.yml
+  tasks:
+    - name: Levantar cada máquina virtual
+      ansible.builtin.command: vboxmanage startvm "{{ item.name }}" --type headless
+      ignore_errors: yes
+      register: result
+      loop: "{{ prueba }}"
