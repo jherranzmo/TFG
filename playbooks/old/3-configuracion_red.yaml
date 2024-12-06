@@ -1,0 +1,33 @@
+---
+- name: Instalar Ubuntu en VM VirtualBox
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../prueba_values.yml
+  tasks:
+    - name: Configurar segundo adaptador de red en modo Host-Only
+      command: vboxmanage modifyvm {{ item.name }} --nic2 hostonly --hostonlyadapter2 {{ hostonlyAdapter }}
+      loop: "{{ vms }}"
+
+    - name: Crear archivo de configuración de red estática
+      copy:
+        dest: "/etc/netplan/01-netcfg.yaml"
+        content: |
+          network:
+            version: 2
+            ethernets:
+              enp0s8:
+                dhcp4: no
+                addresses:
+                  - {{ item.ip }}/24
+                gateway4: {{ gateway }}
+                nameservers:
+                  addresses: [8.8.8.8, 8.8.4.4]
+      loop: "{{ vms }}"
+      delegate_to: "{{ item.name }}"
+
+    - name: Aplicar configuración de red
+      command: netplan apply
+      loop: "{{ vms }}"
+      delegate_to: "{{ item.name }}"
+
