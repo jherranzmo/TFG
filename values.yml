@@ -36,3 +36,6 @@ worker2:
 
 worker3:
   - name: worker3
+
+prueba:
+  - name: prueba
