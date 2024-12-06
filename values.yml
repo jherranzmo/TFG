@@ -3,26 +3,36 @@ vms:
   - name: master1
     memory: 3072
     vcpus: 3
-    ip: 192.168.56.21
   - name: master2
     memory: 3072
     vcpus: 3
-    ip: 192.168.56.22
   - name: master3
     memory: 3072
     vcpus: 3
-    ip: 192.168.56.23
   - name: worker1
     memory: 2048
     vcpus: 2
-    ip: 192.168.56.51
   - name: worker2
     memory: 2048
     vcpus: 2
-    ip: 192.168.56.52
   - name: worker3
     memory: 2048
     vcpus: 2
-    ip: 192.168.56.53
 
-hostonly_adapter: vboxnet0
+master1:
+  - name: master1
+
+master2:
+  - name: master2
+
+master3:
+  - name: master3
+
+worker1:
+  - name: worker1
+
+worker2:
+  - name: worker2
+
+worker3:
+  - name: worker3

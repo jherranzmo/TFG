@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: no
   vars_files:
-    - ../prueba_values.yml
+    - ../values.yml
   tasks:
     - name: Crear la VM en VirtualBox
       command: vboxmanage createvm --name {{ item.name }} --ostype Ubuntu_64 --register

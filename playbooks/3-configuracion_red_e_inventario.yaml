@@ -1,0 +1,263 @@
+---
+- name: Add MV al inventario
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../prueba_values.yml
+  tasks:
+    - name: Levantar cada máquina virtual
+      command: vboxmanage startvm "{{ item.name }}" --type headless
+      ignore_errors: yes
+      register: start_vm
+      loop: "{{ master1 }}"
+
+    - name: Esperar a que la mv se encienda
+      pause:
+        seconds: 60
+
+    - name: Comprobar si haw name en vars.env
+      command: /home/jdherranz/git/TFG/scripts/add_vars.sh
+
+    - name: Añadir nombre de máquina al archivo de variables
+      shell: echo 'NEW_NAME="{{ item.name }}"'>> /home/jdherranz/git/TFG/scripts/vars.env
+      loop: "{{ master1 }}"
+
+    - name: Ejecutar script de cambio de ip en el host
+      command: /home/jdherranz/git/TFG/scripts/change_ip.sh
+      loop: "{{ master1 }}"
+
+    - name: Esperar a que los cambios se realicen
+      pause:
+        seconds: 20
+
+    - name: Reiniciar la máquina
+      command: vboxmanage controlvm "{{ item.name }}" reset
+      loop: "{{ master1 }}"
+
+    - name: Esperar un tiempo para que la MV inicie
+      pause:
+        seconds: 80
+
+    - name: Añadir máquina al inventario
+      command: /home/jdherranz/git/TFG/scripts/generate_inventary.sh
+      loop: "{{ master1 }}"
+
+    - name: Apagar MV
+      command: vboxmanage controlvm "{{ item.name }}" poweroff
+      loop: "{{ master1 }}"
+
+## MASTER2
+
+    - name: Levantar cada máquina virtual
+      command: vboxmanage startvm "{{ item.name }}" --type headless
+      ignore_errors: yes
+      register: start_vm
+      loop: "{{ master2 }}"
+
+    - name: Esperar a que la mv se encienda
+      pause:
+        seconds: 60
+
+    - name: Comprobar si haw name en vars.env
+      command: /home/jdherranz/git/TFG/scripts/add_vars.sh
+
+    - name: Añadir nombre de máquina al archivo de variables
+      shell: echo 'NEW_NAME="{{ item.name }}"'>> /home/jdherranz/git/TFG/scripts/vars.env
+      loop: "{{ master2 }}"
+
+    - name: Ejecutar script de cambio de ip en el host
+      command: /home/jdherranz/git/TFG/scripts/change_ip.sh
+      loop: "{{ master2 }}"
+
+    - name: Esperar a que los cambios se realicen
+      pause:
+        seconds: 20
+
+    - name: Reiniciar la máquina
+      command: vboxmanage controlvm "{{ item.name }}" reset
+      loop: "{{ master2 }}"
+
+    - name: Esperar un tiempo para que la MV inicie
+      pause:
+        seconds: 80
+
+    - name: Añadir máquina al inventario
+      command: /home/jdherranz/git/TFG/scripts/generate_inventary.sh
+      loop: "{{ master2 }}"
+
+    - name: Apagar MV
+      command: vboxmanage controlvm "{{ item.name }}" poweroff
+      loop: "{{ master2 }}"
+        
+## MASTER3
+
+    - name: Levantar cada máquina virtual
+      command: vboxmanage startvm "{{ item.name }}" --type headless
+      ignore_errors: yes
+      register: start_vm
+      loop: "{{ master3 }}"
+
+    - name: Esperar a que la mv se encienda
+      pause:
+        seconds: 60
+
+    - name: Comprobar si haw name en vars.env
+      command: /home/jdherranz/git/TFG/scripts/add_vars.sh
+
+    - name: Añadir nombre de máquina al archivo de variables
+      shell: echo 'NEW_NAME="{{ item.name }}"'>> /home/jdherranz/git/TFG/scripts/vars.env
+      loop: "{{ master3 }}"
+
+    - name: Ejecutar script de cambio de ip en el host
+      command: /home/jdherranz/git/TFG/scripts/change_ip.sh
+      loop: "{{ master3 }}"
+
+    - name: Esperar a que los cambios se realicen
+      pause:
+        seconds: 20
+
+    - name: Reiniciar la máquina
+      command: vboxmanage controlvm "{{ item.name }}" reset
+      loop: "{{ master3 }}"
+
+    - name: Esperar un tiempo para que la MV inicie
+      pause:
+        seconds: 80
+
+    - name: Añadir máquina al inventario
+      command: /home/jdherranz/git/TFG/scripts/generate_inventary.sh
+      loop: "{{ master3 }}"
+
+    - name: Apagar MV
+      command: vboxmanage controlvm "{{ item.name }}" poweroff
+      loop: "{{ master3 }}"
+
+## WORKER3
+
+    - name: Levantar cada máquina virtual
+      command: vboxmanage startvm "{{ item.name }}" --type headless
+      ignore_errors: yes
+      register: start_vm
+      loop: "{{ worker1 }}"
+
+    - name: Esperar a que "{{ item.name }}" se encienda
+      pause:
+        seconds: 60
+
+    - name: Comprobar si haw name en vars.env
+      command: /home/jdherranz/git/TFG/scripts/add_vars.sh
+
+    - name: Añadir nombre de máquina
+      shell: echo 'NEW_NAME="{{ item.name }}"'>> /home/jdherranz/git/TFG/scripts/vars.env
+      loop: "{{ worker1 }}"
+
+    - name: Ejecutar script de cambio de ip en el host
+      command: /home/jdherranz/git/TFG/scripts/change_ip.sh
+      loop: "{{ worker1 }}"
+
+    - name: Esperar a que los cambios se realicen
+      pause:
+        seconds: 20
+
+    - name: Reiniciar la máquina
+      command: vboxmanage controlvm "{{ item.name }}" reset
+      loop: "{{ worker1 }}"
+
+    - name: Esperar un tiempo para que la MV inicie
+      pause:
+        seconds: 80
+
+    - name: Añadir máquina al inventario
+      command: /home/jdherranz/git/TFG/scripts/generate_inventary.sh
+      loop: "{{ worker1 }}"
+
+    - name: Apagar MV
+      command: vboxmanage controlvm "{{ item.name }}" poweroff
+      loop: "{{ worker1 }}"
+
+## WORKER3
+
+    - name: Levantar cada máquina virtual
+      command: vboxmanage startvm "{{ item.name }}" --type headless
+      ignore_errors: yes
+      register: start_vm
+      loop: "{{ worker2 }}"
+
+    - name: Esperar a que "{{ item.name }}" se encienda
+      pause:
+        seconds: 60
+
+    - name: Comprobar si haw name en vars.env
+      command: /home/jdherranz/git/TFG/scripts/add_vars.sh
+
+    - name: Añadir nombre de máquina
+      shell: echo 'NEW_NAME="{{ item.name }}"'>> /home/jdherranz/git/TFG/scripts/vars.env
+      loop: "{{ worker2 }}"
+
+    - name: Ejecutar script de cambio de ip en el host
+      command: /home/jdherranz/git/TFG/scripts/change_ip.sh
+      loop: "{{ worker2 }}"
+
+    - name: Esperar a que los cambios se realicen
+      pause:
+        seconds: 20
+
+    - name: Reiniciar la máquina
+      command: vboxmanage controlvm "{{ item.name }}" reset
+      loop: "{{ worker2 }}"
+
+    - name: Esperar un tiempo para que la MV inicie
+      pause:
+        seconds: 80
+
+    - name: Añadir máquina al inventario
+      command: /home/jdherranz/git/TFG/scripts/generate_inventary.sh
+      loop: "{{ worker2 }}"
+
+    - name: Apagar MV
+      command: vboxmanage controlvm "{{ item.name }}" poweroff
+      loop: "{{ worker2 }}"
+        
+## WORKER3
+
+    - name: Levantar cada máquina virtual
+      command: vboxmanage startvm "{{ item.name }}" --type headless
+      ignore_errors: yes
+      register: start_vm
+      loop: "{{ worker3 }}"
+
+    - name: Esperar a que "{{ item.name }}" se encienda
+      pause:
+        seconds: 60
+
+    - name: Comprobar si haw name en vars.env
+      command: /home/jdherranz/git/TFG/scripts/add_vars.sh
+
+    - name: Añadir nombre de máquina
+      shell: echo 'NEW_NAME="{{ item.name }}"'>> /home/jdherranz/git/TFG/scripts/vars.env
+      loop: "{{ worker3 }}"
+
+    - name: Ejecutar script de cambio de ip en el host
+      command: /home/jdherranz/git/TFG/scripts/change_ip.sh
+      loop: "{{ worker3 }}"
+
+    - name: Esperar a que los cambios se realicen
+      pause:
+        seconds: 20
+
+    - name: Reiniciar la máquina
+      command: vboxmanage controlvm "{{ item.name }}" reset
+      loop: "{{ worker3 }}"
+
+    - name: Esperar un tiempo para que la MV inicie
+      pause:
+        seconds: 80
+
+    - name: Añadir máquina al inventario
+      command: /home/jdherranz/git/TFG/scripts/generate_inventary.sh
+      loop: "{{ worker3 }}"
+
+    - name: Apagar MV
+      command: vboxmanage controlvm "{{ item.name }}" poweroff
+      loop: "{{ worker3 }}"
+
