@@ -9,7 +9,7 @@
       command: vboxmanage createvm --name {{ item.name }} --ostype Ubuntu_64 --register
       loop: "{{ vms }}"
 
-    - name: Configurar memoria RAM y VRAM de la VM
+    - name: Configurar memoria RAM y CPU de la VM
       command: vboxmanage modifyvm {{ item.name }} --memory {{ item.memory }} --vram 16 --cpus {{ item.vcpus }}
       loop: "{{ vms }}"
 
@@ -33,7 +33,7 @@
       command: vboxmanage storageattach {{ item.name }} --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium /home/jdherranz/TFG/images/ubuntu-server-22.04.5.iso
       loop: "{{ vms }}"   
 
-    - name: Montar la ISO de cloud-init
+    - name: Montar la ISO seed
       command: vboxmanage storageattach {{ item.name }} --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium /home/jdherranz/TFG/images/seed/seed.iso
       loop: "{{ vms }}"
 
