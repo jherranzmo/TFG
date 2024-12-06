@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: no
   vars_files:
-    - ../prueba_values.yml
+    - ../values.yml
   tasks:
     - name: Levantar cada máquina virtual
       command: vboxmanage startvm "{{ item.name }}" --type headless
