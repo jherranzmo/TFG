@@ -1,6 +1,6 @@
 ---
-- name: Instalar paquetes en los master
-  hosts: prueba
+- name: Instalar paquetes de kubernetes en los master
+  hosts: master
   gather_facts: no
   become: yes
   tasks:
