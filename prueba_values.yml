@@ -1,14 +1,8 @@
 # values.yml
 vms:
-  - name: master1
+  - name: master3
     memory: 3072
     vcpus: 3
-  - name: master2
-    memory: 3072
-    vcpus: 3
-  - name: worker3
-    memory: 2048
-    vcpus: 2
 
 master1:
   - name: master1
@@ -16,8 +10,17 @@ master1:
 master2:
   - name: master2
 
+master3:
+  - name: master3
+
+worker1:
+  - name: worker1
+
+worker2:
+  - name: worker2
+
 worker3:
   - name: worker3
 
-hostonlyAdapter: vboxnet0
-gateway: 192.168.56.1
+prueba:
+  - name: prueba

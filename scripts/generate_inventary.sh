@@ -15,13 +15,13 @@ if [[ $NEW_NAME == master* ]]; then
     if grep -q "\[master\]" "$archivo"; then
         echo "[master] ya existe en el archivo, agregando nueva cadena debajo."
         # Añadir la nueva cadena debajo de [master]
-        sed -i "/\[master\]/a $NEW_NAME ansible_host=$NEW_IP ansible_user=ubuntu" "$archivo"
+        sed -i "/\[master\]/a $NEW_NAME ansible_host=$NEW_IP ansible_user=jdherranz" "$archivo"
     else
         echo "[master] no existe, creándolo."
         # Añadir [master] al final del archivo si no existe
         echo "[master]" >> "$archivo"
         # Agregar la cadena debajo de [master]
-        echo "$NEW_NAME ansible_host=$NEW_IP ansible_user=ubuntu" >> "$archivo"
+        echo "$NEW_NAME ansible_host=$NEW_IP ansible_user=jdherranz" >> "$archivo"
     fi
 
 elif [[ $NEW_NAME == worker* ]]; then
@@ -32,13 +32,13 @@ elif [[ $NEW_NAME == worker* ]]; then
     if grep -q "\[worker\]" "$archivo"; then
         echo "[worker] ya existe en el archivo, agregando nueva cadena debajo."
         # Añadir la nueva cadena debajo de [worker]
-        sed -i "/\[worker\]/a $NEW_NAME ansible_host=$NEW_IP ansible_user=ubuntu" "$archivo"
+        sed -i "/\[worker\]/a $NEW_NAME ansible_host=$NEW_IP ansible_user=jdherranz" "$archivo"
     else
         echo "[worker] no existe, creándolo."
         # Añadir [worker] al final del archivo si no existe
         echo "[worker]" >> "$archivo"
         # Agregar la cadena debajo de [worker]
-        echo "$NEW_NAME ansible_host=$NEW_IP ansible_user=ubuntu" >> "$archivo"
+        echo "$NEW_NAME ansible_host=$NEW_IP ansible_user=jdherranz" >> "$archivo"
     fi
 
 else
