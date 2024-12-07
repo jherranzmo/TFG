@@ -18,7 +18,7 @@ network:
           - 8.8.4.4
 EOF
 
-scp -o StrictHostKeyChecking=no -i /home/jdherranz/.ssh/id_rsa $OUTPUT_FILE ubuntu@$IP:/home/ubuntu
+scp -o StrictHostKeyChecking=no -i /home/jdherranz/.ssh/id_rsa $OUTPUT_FILE jdherranz@$IP:/home/jdherranz
 
-ssh -o StrictHostKeyChecking=no -i /home/jdherranz/.ssh/id_rsa ubuntu@$IP "sudo cp $OUTPUT_FILE /etc/netplan && sudo netplan apply"
-ssh -o StrictHostKeyChecking=no -i /home/jdherranz/.ssh/id_rsa ubuntu@$IP "sudo sed -i 's/ubuntu-server1/$NEW_NAME/g' /etc/hostname"
+ssh -o StrictHostKeyChecking=no -i /home/jdherranz/.ssh/id_rsa jdherranz@$IP "sudo cp $OUTPUT_FILE /etc/netplan && sudo netplan apply"
+ssh -o StrictHostKeyChecking=no -i /home/jdherranz/.ssh/id_rsa jdherranz@$IP "sudo sed -i 's/ubuntu-server1/$NEW_NAME/g' /etc/hostname"

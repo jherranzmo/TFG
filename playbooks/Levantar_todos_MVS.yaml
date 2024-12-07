@@ -1,5 +1,5 @@
 ---
-- name: Instalar paquetes en los master
+- name: Levantar todas las MVs
   hosts: localhost
   gather_facts: no
   vars_files:
@@ -9,4 +9,4 @@
       ansible.builtin.command: vboxmanage startvm "{{ item.name }}" --type headless
       ignore_errors: yes
       register: result
-      loop: "{{ prueba }}"
+      loop: "{{ vms }}"
