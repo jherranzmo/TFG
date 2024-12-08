@@ -5,7 +5,7 @@
   vars_files:
     - ../values.yml
   tasks:
-    - name: Levantar cada máquina virtual
+    - name: Levantar la máquina virtual
       command: vboxmanage startvm "{{ item.name }}" --type headless
       ignore_errors: yes
       register: start_vm
@@ -15,14 +15,14 @@
       pause:
         seconds: 60
 
-    - name: Comprobar si haw name en vars.env
+    - name: Comprobar si hay name en vars.env
       command: /home/jdherranz/git/TFG/scripts/add_vars.sh
 
     - name: Añadir nombre de máquina al archivo de variables
       shell: echo 'NEW_NAME="{{ item.name }}"'>> /home/jdherranz/git/TFG/scripts/vars.env
       loop: "{{ master1 }}"
 
-    - name: Ejecutar script de cambio de ip en el host
+    - name: Ejecutar script de cambio de ip en la MV
       command: /home/jdherranz/git/TFG/scripts/change_ip.sh
       loop: "{{ master1 }}"
 
@@ -48,7 +48,7 @@
 
 ## MASTER2
 
-    - name: Levantar cada máquina virtual
+    - name: Levantar la máquina virtual
       command: vboxmanage startvm "{{ item.name }}" --type headless
       ignore_errors: yes
       register: start_vm
@@ -58,7 +58,7 @@
       pause:
         seconds: 60
 
-    - name: Comprobar si haw name en vars.env
+    - name: Comprobar si hay name en vars.env
       command: /home/jdherranz/git/TFG/scripts/add_vars.sh
 
     - name: Añadir nombre de máquina al archivo de variables
@@ -91,7 +91,7 @@
         
 ## MASTER3
 
-    - name: Levantar cada máquina virtual
+    - name: Levantar la máquina virtual
       command: vboxmanage startvm "{{ item.name }}" --type headless
       ignore_errors: yes
       register: start_vm

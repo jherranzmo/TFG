@@ -1,0 +1,27 @@
+---
+- name: Configurar SO
+  hosts: prueba
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Actualizar todos lo paquetes del SO
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Hacer un full-upgrade
+      apt:
+        upgrade: full
+        autoremove: yes
+
+    - name: Comprobar si el reboot de la máquina es necesario tras el upgrade.
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_required
+
+    - name: Hacer el reboot si es necesario
+      reboot:
+        msg: "Reboot generado por Ansible debido a la actualización."
+        connect_timeout: 5
+        reboot_timeout: 600
+        pre_reboot_delay: 5
+      when: reboot_required.stat.exists

@@ -2,11 +2,10 @@
 
 source /home/jdherranz/git/TFG/scripts/vars.env
 
-# Ruta al archivo de inventario
 archivo="/home/jdherranz/git/TFG/inventario.ini"
 NEW_IP=$(nmap -sn 192.168.10.0/24 | grep $NEW_NAME | awk -F'[()]' '{print $2}')
 
-# Comprobar si NEW_NAME empieza con "master" o "worker"
+# Diferenciamos si es un master o un worker
 if [[ $NEW_NAME == master* ]]; then
     # Si NEW_NAME empieza con "master"
     echo "Se está configurando un master."
