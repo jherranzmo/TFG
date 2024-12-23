@@ -1,0 +1,144 @@
+---
+- name: Configurar clúster de Kubernetes
+  hosts: all
+  become: true
+  tasks:
+    - name: Inicializar el clúster de Kubernetes en el primer maestro
+      ansible.builtin.command: |
+        kubeadm init --control-plane-endpoint "{{ hostvars['master1']['ansible_host'] }}" --pod-network-cidr=192.168.0.0/16 --cri-socket=unix:///run/containerd/containerd.sock --upload-certs
+      when: inventory_hostname == 'master1'
+
+    - name: Copiar el archivo kubeconfig para el usuario actual
+      ansible.builtin.shell: |
+        mkdir -p $HOME/.kube 
+        cp -i /etc/kubernetes/admin.conf $HOME/.kube/config 
+        chown $(id -u):$(id -g) $HOME/.kube/config
+      when: inventory_hostname == 'master1'
+
+    - name: Generar un token para unir nodos al clúster
+      ansible.builtin.command: kubeadm token create --print-join-command
+      register: join_command
+      when: inventory_hostname == 'master1'
+
+    - name: Extraer el TOKEN del comando generado
+      ansible.builtin.set_fact:
+        kubeadm_token: "{{ join_command.stdout.split('--token')[1].split()[0] | trim }}"
+      when: inventory_hostname == 'master1'
+
+    - name: Extraer el HASH del comando generado
+      ansible.builtin.set_fact:
+        discovery_hash: "{{ join_command.stdout.split('--discovery-token-ca-cert-hash')[1].split()[0] | trim }}"
+      when: inventory_hostname == 'master1'
+
+    - name: Guardar el TOKEN y el HASH en un archivo en master1
+      ansible.builtin.copy:
+        content: |
+          kubeadm_token={{ kubeadm_token }}
+          discovery_hash={{ discovery_hash }}
+        dest: "/tmp/kubeadm_join_vars.txt"
+      when: inventory_hostname == 'master1'
+
+    - name: Usar el módulo fetch para copiar el archivo desde master1 a otros nodos
+      ansible.builtin.fetch:
+        src: "/tmp/kubeadm_join_vars.txt"
+        dest: "/tmp/kubeadm_join_vars.txt"
+        flat: yes
+      when: inventory_hostname == 'master1'
+
+    - name: Copiar el archivo desde el controlador a otros nodos
+      ansible.builtin.copy:
+        src: "/tmp/kubeadm_join_vars.txt"
+        dest: "/tmp/kubeadm_join_vars.txt"
+      when: inventory_hostname != 'master1'
+
+    - name: Leer el archivo de variables y cargar el TOKEN y HASH en los demás nodos
+      ansible.builtin.slurp:
+        src: "/tmp/kubeadm_join_vars.txt"
+      register: kubeadm_vars
+      when: inventory_hostname != 'master1'
+
+    - name: Establecer el TOKEN y el HASH en las máquinas worker y master
+      ansible.builtin.set_fact:
+        kubeadm_token_global: "{{ (kubeadm_vars.content | b64decode).splitlines() | select('search', '^kubeadm_token=') | first | regex_replace('^kubeadm_token=', '') }}"
+        discovery_hash_global: "{{ (kubeadm_vars.content | b64decode).splitlines() | select('search', '^discovery_hash=') | first | regex_replace('^discovery_hash=', '') }}"
+      when: inventory_hostname != 'master1'
+
+    - name: Eliminar el prefijo 'sha256:' del discovery_hash_global
+      ansible.builtin.set_fact:
+        discovery_hash_global_clean: "{{ discovery_hash_global | regex_replace('^sha256:', '') }}"
+      when: inventory_hostname != 'master1'
+
+    - name: Recopilar certificados pki y claves desde master1
+      ansible.builtin.fetch:
+        src: "{{ item }}"
+        dest: "/tmp/certificates/"
+        flat: yes
+      with_items:
+        - "/etc/kubernetes/pki/ca.crt"
+        - "/etc/kubernetes/pki/ca.key"
+        - "/etc/kubernetes/pki/sa.key"
+        - "/etc/kubernetes/pki/sa.pub"
+        - "/etc/kubernetes/pki/front-proxy-ca.crt"
+        - "/etc/kubernetes/pki/front-proxy-ca.key"
+        - "/etc/kubernetes/admin.conf"
+      delegate_to: master1
+      become: true
+      when: inventory_hostname == 'master1'
+
+    - name: Recopilar certificados etcd y claves desde master1
+      ansible.builtin.fetch:
+        src: "{{ item }}"
+        dest: "/tmp/certificates/etcd/"
+        flat: yes
+      with_items:
+        - "/etc/kubernetes/pki/etcd/ca.crt"
+        - "/etc/kubernetes/pki/etcd/ca.key"
+      delegate_to: master1
+      become: true
+      when: inventory_hostname == 'master1'
+
+    - name: Crear directorios en los nodos destino
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0700'
+      loop:
+       - "/etc/kubernetes"
+       - "/etc/kubernetes/pki"
+       - "/etc/kubernetes/pki/etcd"
+      when: inventory_hostname in groups['master'] and inventory_hostname != 'master1'
+      become: true
+      
+    - name: Copiar certificados y claves a los nodos destino
+      ansible.builtin.copy:
+        src: "/tmp/certificates/{{ item }}"
+        dest: "/etc/kubernetes/pki/{{ item }}"
+        owner: root
+        group: root
+        mode: '0600'
+      with_items:
+        - "ca.crt"
+        - "ca.key"
+        - "sa.key"
+        - "sa.pub"
+        - "front-proxy-ca.crt"
+        - "front-proxy-ca.key"
+        - "etcd/ca.crt"
+        - "etcd/ca.key"
+        - "admin.conf"
+      when: inventory_hostname in groups['master'] and inventory_hostname != 'master1'
+      become: true   
+
+    - name: Unirse al clúster como maestro
+      ansible.builtin.command: |
+        kubeadm join {{ hostvars['master1']['ansible_host'] }}:6443 --token {{ kubeadm_token_global }} \
+        --discovery-token-ca-cert-hash sha256:{{ discovery_hash_global_clean }} --control-plane
+      when: inventory_hostname in groups['master'] and inventory_hostname != 'master1'
+    
+    - name: Unir los workers al clúster
+      ansible.builtin.command: |
+        kubeadm join {{ hostvars['master1']['ansible_host'] }}:6443 --token {{ kubeadm_token_global }} \
+        --discovery-token-ca-cert-hash sha256:{{ discovery_hash_global_clean }}
+      when:  "'worker' in group_names"

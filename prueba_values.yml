@@ -1,6 +1,12 @@
 # values.yml
 vms:
-  - name: master3
+  - name: worker1
+    memory: 3072
+    vcpus: 3
+  - name: worker2
+    memory: 3072
+    vcpus: 3
+  - name: worker3
     memory: 3072
     vcpus: 3
 

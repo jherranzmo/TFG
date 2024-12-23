@@ -14,7 +14,8 @@
       loop: "{{ vms }}"
 
     - name: Crear disco duro de 15 GB
-      command: vboxmanage createhd --filename ~/VirtualBox\ VMs/{{ item.name }}/{{ item.name }}.vdi --size 15000
+      #command: vboxmanage createhd --filename ~/VirtualBox\ VMs/{{ item.name }}/{{ item.name }}.vdi --size 15000
+      command: vboxmanage createhd --filename /media/jdherranz/hd/{{ item.name }}/{{ item.name }}.vdi --size 15000
       loop: "{{ vms }}"
 
     - name: Añadir controlador SATA
@@ -22,7 +23,8 @@
       loop: "{{ vms }}"
 
     - name: Vincular disco duro con la controladora SATA
-      command: vboxmanage storageattach {{ item.name }} --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium ~/VirtualBox\ VMs/{{ item.name }}/{{ item.name }}.vdi
+      #command: vboxmanage storageattach {{ item.name }} --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium ~/VirtualBox\ VMs/{{ item.name }}/{{ item.name }}.vdi
+      command: vboxmanage storageattach {{ item.name }} --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium /media/jdherranz/hd/{{ item.name }}/{{ item.name }}.vdi
       loop: "{{ vms }}"
 
     - name: Crear controlador IDE y añadir la ISO de Ubuntu
