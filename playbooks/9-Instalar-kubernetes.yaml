@@ -1,18 +1,20 @@
 ---
-- name: Configurar clúster de Kubernetes
+- name: Instalar el clúster de Kubernetes
   hosts: all
   become: true
   tasks:
     - name: Inicializar el clúster de Kubernetes en el primer maestro
-      ansible.builtin.command: |
+      ansible.builtin.command: 
         kubeadm init --control-plane-endpoint "{{ hostvars['master1']['ansible_host'] }}" --pod-network-cidr=192.168.0.0/16 --cri-socket=unix:///run/containerd/containerd.sock --upload-certs
+        ##kubeadm init --control-plane-endpoint k8sansible --pod-network-cidr=192.168.0.0/16 --cri-socket=unix:///run/containerd/containerd.sock --upload-certs
       when: inventory_hostname == 'master1'
 
     - name: Copiar el archivo kubeconfig para el usuario actual
+      become: false
       ansible.builtin.shell: |
         mkdir -p $HOME/.kube 
-        cp -i /etc/kubernetes/admin.conf $HOME/.kube/config 
-        chown $(id -u):$(id -g) $HOME/.kube/config
+        sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config 
+        sudo chown $(id -u):$(id -g) $HOME/.kube/config
       when: inventory_hostname == 'master1'
 
     - name: Generar un token para unir nodos al clúster
@@ -132,13 +134,13 @@
       become: true   
 
     - name: Unirse al clúster como maestro
-      ansible.builtin.command: |
-        kubeadm join {{ hostvars['master1']['ansible_host'] }}:6443 --token {{ kubeadm_token_global }} \
-        --discovery-token-ca-cert-hash sha256:{{ discovery_hash_global_clean }} --control-plane
+      ansible.builtin.command: 
+        kubeadm join {{ hostvars['master1']['ansible_host'] }}:6443 --token {{ kubeadm_token_global }} --discovery-token-ca-cert-hash sha256:{{ discovery_hash_global_clean }} --control-plane
+        ##kubeadm join k8sansible:6443 --token {{ kubeadm_token_global }} --discovery-token-ca-cert-hash sha256:{{ discovery_hash_global_clean }} --control-plane
       when: inventory_hostname in groups['master'] and inventory_hostname != 'master1'
     
     - name: Unir los workers al clúster
-      ansible.builtin.command: |
-        kubeadm join {{ hostvars['master1']['ansible_host'] }}:6443 --token {{ kubeadm_token_global }} \
-        --discovery-token-ca-cert-hash sha256:{{ discovery_hash_global_clean }}
+      ansible.builtin.command: 
+        kubeadm join {{ hostvars['master1']['ansible_host'] }}:6443 --token {{ kubeadm_token_global }} --discovery-token-ca-cert-hash sha256:{{ discovery_hash_global_clean }}
+        ##kubeadm join k8sansible:6443 --token {{ kubeadm_token_global }} --discovery-token-ca-cert-hash sha256:{{ discovery_hash_global_clean }}
       when:  "'worker' in group_names"

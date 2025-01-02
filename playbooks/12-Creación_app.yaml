@@ -1,0 +1,9 @@
+---
+- name: Desplegar nginx con 2 réplicas
+  hosts: localhost
+  tasks:
+    - name: Create nginx Deployment
+      ansible.builtin.shell:
+        kubectl create deployment nginx-app --image=nginx --replicas=2
+      args:
+        warn: false

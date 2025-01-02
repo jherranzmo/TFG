@@ -1,0 +1,33 @@
+---
+- name: Copiar .kube/config desde master1 y distribuirlo
+  hosts: master1
+  tasks:
+    - name: Obtener archivo .kube/config desde el usuario jdherranz en master1
+      ansible.builtin.fetch:
+        src: /home/jdherranz/.kube/config
+        dest: /home/jdherranz/.kube/
+        flat: yes
+      run_once: true
+
+- name: Crear directorio .kube y copiar el archivo en los nodos
+  hosts: all
+  tasks:
+    - name: Crear el directorio .kube si no existe
+      ansible.builtin.file:
+        path: /home/jdherranz/.kube
+        state: directory
+        owner: jdherranz
+        group: jdherranz
+        mode: '0755'
+
+- name: Copiar el archivo .kube/config desde la máquina física a los nodos
+  hosts: all
+  tasks:
+    - name: Copiar el archivo .kube/config a los nodos
+      ansible.builtin.copy:
+        src: /home/jdherranz/.kube/config
+        dest: /home/jdherranz/.kube/config
+        owner: jdherranz
+        group: jdherranz
+        mode: '0644'
+      when: inventory_hostname != "master1"

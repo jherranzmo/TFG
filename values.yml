@@ -10,14 +10,14 @@ vms:
     memory: 3072
     vcpus: 3
   - name: worker1
-    memory: 2048
-    vcpus: 2
+    memory: 3072
+    vcpus: 3
   - name: worker2
-    memory: 2048
-    vcpus: 2
+    memory: 3072
+    vcpus: 3
   - name: worker3
-    memory: 2048
-    vcpus: 2
+    memory: 3072
+    vcpus: 3
 
 master1:
   - name: master1

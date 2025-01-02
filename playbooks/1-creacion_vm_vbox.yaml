@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: no
   vars_files:
-    - ../prueba_values.yml
+    - ../values.yml
   tasks:
     - name: Crear la VM en VirtualBox
       command: vboxmanage createvm --name {{ item.name }} --ostype Ubuntu_64 --register
@@ -13,9 +13,9 @@
       command: vboxmanage modifyvm {{ item.name }} --memory {{ item.memory }} --vram 16 --cpus {{ item.vcpus }}
       loop: "{{ vms }}"
 
-    - name: Crear disco duro de 15 GB
+    - name: Crear disco duro de 16 GB
       #command: vboxmanage createhd --filename ~/VirtualBox\ VMs/{{ item.name }}/{{ item.name }}.vdi --size 15000
-      command: vboxmanage createhd --filename /media/jdherranz/hd/{{ item.name }}/{{ item.name }}.vdi --size 15000
+      command: vboxmanage createhd --filename /media/jdherranz/hd/{{ item.name }}/{{ item.name }}.vdi --size 17000
       loop: "{{ vms }}"
 
     - name: Añadir controlador SATA
