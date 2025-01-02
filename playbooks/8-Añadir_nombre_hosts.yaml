@@ -1,0 +1,20 @@
+---
+- name: Añadir IP y nombre al /etc/hosts
+  hosts: all
+  become: true
+  tasks:
+    - name: Añadir entrada al /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: '^192\.168\.10\.177\s+k8sansible$'
+        line: '192.168.10.177 k8sansible'
+        state: present
+      notify: Reiniciar servicios si es necesario
+
+  handlers:
+    - name: Reiniciar servicios si es necesario
+      become: true
+      ansible.builtin.service:
+        name: network
+        state: restarted
+

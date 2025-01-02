@@ -1,0 +1,24 @@
+---
+- name: Instalar calico y el dashboard
+  hosts: master1
+  tasks:
+    - name: Instalar calico
+      ansible.builtin.shell: |
+        kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/calico.yaml
+      args:
+        warn: false
+
+    - name: Esperar a que todos los pods estén en Running
+      ansible.builtin.shell: |
+        kubectl get pods -n kube-system --no-headers | awk '{print $3}' | grep -v Running || true
+      register: pod_status
+      failed_when: pod_status.rc != 0 and pod_status.stdout != ""
+      retries: 30
+      delay: 30
+      until: pod_status.stdout == ""
+
+    - name: Instalar dashboard
+      ansible.builtin.shell: |
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+      args:
+        warn: false

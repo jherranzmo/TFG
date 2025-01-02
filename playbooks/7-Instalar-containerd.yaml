@@ -1,0 +1,45 @@
+---
+- name: Instalar containerd
+  hosts: all
+  become: true
+  tasks:
+    - name: Dejar los módulos persistentes
+      ansible.builtin.shell: |
+        tee /etc/modules-load.d/containerd.conf <<EOF
+        overlay
+        br_netfilter
+        EOF      
+      args:
+        warn: false
+
+    - name: Instalar dependencias
+      ansible.builtin.apt: 
+        name:
+          - gnupg2
+          - software-properties-common
+        state: present
+        update_cache: yes
+
+    - name: Añadir el repositorio
+      ansible.builtin.shell: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg
+        add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      args:
+        warn: false
+
+    - name: Instalar containerd.io
+      ansible.builtin.apt: 
+        name:
+          - containerd.io
+        state: present
+        update_cache: yes
+          
+    - name: Configurar containerd y levantar el servicio
+      ansible.builtin.shell: |
+        mkdir -p /etc/containerd
+        containerd config default|sudo tee /etc/containerd/config.toml
+        sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+        systemctl restart containerd
+        systemctl enable containerd
+      args:
+        warn: false

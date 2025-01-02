@@ -1,0 +1,9 @@
+---
+- name: Creación de usuario admin
+  hosts: localhost
+  tasks:
+    - name: Creación de usuario admin
+      ansible.builtin.shell: 
+        kubectl apply -f /home/jdherranz/git/TFG/config/admin-user.yaml
+      args:
+        warn: false

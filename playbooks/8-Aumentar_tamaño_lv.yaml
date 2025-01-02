@@ -1,0 +1,11 @@
+---
+- name: Aumentar tamaño LVM
+  hosts: all
+  become: true
+  tasks:
+    - name: Aumentar tamaño LVM
+      ansible.builtin.shell: |
+        lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+        resize2fs /dev/ubuntu-vg/ubuntu-lv
+      args:
+        warn: false

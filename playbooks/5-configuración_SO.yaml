@@ -1,6 +1,6 @@
 ---
 - name: Configurar SO
-  hosts: prueba
+  hosts: all
   gather_facts: no
   become: yes
   tasks:

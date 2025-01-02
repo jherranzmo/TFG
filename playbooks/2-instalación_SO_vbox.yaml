@@ -12,8 +12,8 @@
     - name: Esperar a que {{ item.name }} se apague
       shell: VBoxManage showvminfo {{ item.name }} | grep -i 'State' | grep -i 'powered off'
       register: vm_state
-      retries: 60 # Número de intentos
-      delay: 20     # Segundos entre intentos
+      retries: 100 
+      delay: 30     # Segundos entre intentos
       until: vm_state.rc == 0
       ignore_errors: yes
       loop: "{{ vms }}"
