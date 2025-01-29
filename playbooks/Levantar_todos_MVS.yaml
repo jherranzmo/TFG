@@ -10,3 +10,6 @@
       ignore_errors: yes
       register: result
       loop: "{{ vms }}"
+
+    - name: Refrescar inventario dinámicamente
+      meta: refresh_inventory
