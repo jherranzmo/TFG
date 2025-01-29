@@ -1,14 +1,14 @@
-#- name: 1 Creacion de máquinas virtuales
-#  ansible.builtin.import_playbook: 1-creacion_vm_vbox.yaml
-#
-#- name: 2 Instalación del SO
-#  ansible.builtin.import_playbook: 2-instalación_SO_vbox.yaml
-#
-#- name: 3 Configuracion red e inventario
-#  ansible.builtin.import_playbook: 3-configuracion_red_e_inventario.yaml
-#
-#- name: Levantar MVs
-#  ansible.builtin.import_playbook: Levantar_todos_MVS.yaml
+- name: 1 Creacion de máquinas virtuales
+  ansible.builtin.import_playbook: 1-creacion_vm_vbox.yaml
+
+- name: 2 Instalación del SO
+  ansible.builtin.import_playbook: 2-instalación_SO_vbox.yaml
+
+- name: 3 Configuracion red e inventario
+  ansible.builtin.import_playbook: 3-configuracion_red_e_inventario.yaml
+
+- name: Levantar MVs
+  ansible.builtin.import_playbook: Levantar_todos_MVS.yaml
 
 - name: 4 Instalación paquetes kubernetes
   ansible.builtin.import_playbook: 4-Instalación_paquetes_kubernetes.yaml
